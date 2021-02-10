@@ -1,10 +1,10 @@
 package widgets
 
 import (
-	"image"
 	"strings"
 
 	ui "github.com/gizak/termui/v3"
+	"github.com/gizak/termui/v3/widgets"
 	lingo "github.com/xxxserxxx/lingo"
 )
 
@@ -12,15 +12,17 @@ var tr lingo.Translations
 var keyBinds string
 
 type HelpMenu struct {
-	ui.Block
+	widgets.Paragraph
 }
 
-func NewHelpMenu(tra lingo.Translations) *HelpMenu {
+func NewHelpMenu(tra lingo.Translations) (help *HelpMenu) {
 	tr = tra
 	keyBinds = tr.Value("help.help")
-	return &HelpMenu{
-		Block: *ui.NewBlock(),
+	help = &HelpMenu{
+		Paragraph: *widgets.NewParagraph(),
 	}
+	help.Paragraph.Text = keyBinds
+	return
 }
 
 func (help *HelpMenu) Resize(termWidth, termHeight int) {
@@ -34,20 +36,11 @@ func (help *HelpMenu) Resize(termWidth, termHeight int) {
 	x := (termWidth - textWidth) / 2
 	y := (termHeight - textHeight) / 2
 
-	help.Block.SetRect(x, y, textWidth+x, textHeight+y)
+	help.Paragraph.SetRect(x, y, textWidth+x, textHeight+y)
 }
 
 func (help *HelpMenu) Draw(buf *ui.Buffer) {
-	help.Block.Draw(buf)
-
-	for y, line := range strings.Split(keyBinds, "\n") {
-		for x, rune := range line {
-			buf.SetCell(
-				ui.NewCell(rune, ui.Theme.Default),
-				image.Pt(help.Inner.Min.X+x, help.Inner.Min.Y+y-1),
-			)
-		}
-	}
+	help.Paragraph.Draw(buf)
 }
 
 func maxInt(a int, b int) int {
